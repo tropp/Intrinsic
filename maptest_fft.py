@@ -55,66 +55,28 @@ from pyqtgraph.metaarray import MetaArray
 #from pylibrary.Utility import SignalFilter_LPFBessel
 from optparse import OptionParser
 
-# frequency list for runs 15 May, 24 May and 2 June 2010, until #60 in 2-June
-fl1=[1, 1.414, 2.0, 2.828, 4.0, 5.656, 8.0, 11.318, 16.0, 22.627, 32.0, 45.254]
+# frequency list for runs 14 March 2016
+freqlist = np.logspace(0, 4, num=9, base=2.0)
+fl1 = [3000*x for x in freqlist]
+print "frequency list: ",fl1
+#fl1=[1, 1.414, 2.0, 2.828, 4.0, 5.656, 8.0, 11.318, 16.0, 22.627, 32.0, 45.254]
 # frequency list for runs 2-June 2010, starting at #60 (heavier coverage of higher frequencies) and text note
 fl2 = [4.0, 4.756, 5.656, 6.727, 8.0, 9.5, 11.3, 13.45, 16.0, 19.02, 22.62, 26.91, 31.99, 38.09, 45.25, 53.8]
 # dictionary of data sets
 # Keys are first file #. Data are file name (up, down), wavelength, attn, period, date, frequency list, comment
 # 15 May 10:  used amber LED (noisy) for 610 illumination
-DB = {10: ('010', '011', 610, 15.0, 6.444, '15May10', fl1, 'thinned skull')} # lots of hf oscillations in image; phase map ???
-DB[14] = ('014', '015', 610, 15.0, 6.444, '15May10', fl1, 'dura, focus near surface') # hmmm
-DB[18] = ('018', '019', 610, 15.0, 6.444, '15May10', fl1, 'dura, deeper focus')
-DB[22] = ('022', '023', 610, 8.0, 6.444, '15May10', fl1, 'dura, deeper focus')
-DB[24] = ('024', '025', 610, 29.0, 6.444, '15May10', fl1, 'dura, deeper focus')
-DB[26] = ('026', '027', 560, 29.0, 6.444, '15May10', fl1, 'dura, deeper focus') # light fluctuations; some phase shifts though
-DB[28] = ('028', '029', 560, 26.0, 6.444, '15May10', fl1, 'dura, focus near surface') # too many large fluctuations - can't trust
-
-# 24 May 10: used white LED and put 610 filter in front of camera (quieter illumination)
-# potential damage to cortex (bleeder)
-DB[32] = ('032', '033', 610, 5.0, 6.412, '24May10', fl1, 'dura, just below surface') # amplitude maps look similar; phase maps look good
-DB[34] = ('034', '035', 610, 30.0, 6.412, '24May10', fl1, 'dura, just below surface') #linear drift, but corrections ok; phase gradient
-DB[36] = ('037', '036', 610, 120.0, 6.412, '24May10', fl1, 'dura, just below surface') # no input to speaker; phase map somewhat flat
-DB[39] = ('039', '041', 610, 20.0, 6.482, '24May10', fl1, 'dura, just below surface') # illim steady; no clear resonse in phase map
-
-# 02 June 10: used white LED and green LED
-DB[42] = ('042', '043', 610, 5.0, 6.452, '02Jun10', fl1, 'thinned skull') # not too bad
-DB[44] = ('045', '044', 560, 5.0, 6.452, '02Jun10', fl1, 'thinned skull') # not bad; led is stable
-DB[48] = ('049', '048', 560, 5.0, 6.412, '02Jun10', fl1, 'thinned skull') # up has large drift - NG
-DB[50] = ('050', '051', 610, 20.0, 6.412, '02Jun10', fl1, 'thinned skull') # both have drift, but not many larg fluctuatiosn - map spotty
-DB[52] = ('052', '033', 610, 35.0, 6.422, '02Jun10', fl1, 'thinned skull, focussed slightly deeper') # many large light flucturtions
-DB[54] = ('054', '055', 610, 120.0, 6.412, '02Jun10', fl1, 'thinned skull') # no stim control
-DB[56] = ('056', '057', 560, 120.0, 6.412, '02Jun10', fl1, 'thinned skull') # no stim control
-# changed frequency map for next runs on 02 June 2010
-DB[60] = ('061', '060', 560, 10.0, 4.276, '02Jun10', fl2, 'thinned skull') # large drift on direction
-DB[62] = ('062', '063', 610, 10.0, 4.276, '02Jun10', fl2, 'thinned skull') # drift and noise
-DB[64] = ('064', '065', 610, 30.0, 4.274, '02Jun10', fl2, 'thinned skull') # possibly OK - clean illumination
-DB[66] = ('066', '067', 610, 15.0, 4.274, '02Jun10', fl2, 'thinned skull') # Might be good!!!!
-
-# 09 June 10: QuantEM512SC for imaging 
-DB[68] = ('068', '069', 610, 15.0, 4.228, '09Jun10', fl2, 'thinned skull') # focus near surface Might be good!!!! diagonal phase gradient
-DB[70] = ('070', '071', 610, 15.0, 4.228, '09Jun10', fl2, 'thinned skull') # focus deeper Might be good!!!! Diagonal phase gradient - but horizontal stripe too
-DB[73] = ('073', '074', 610, 15.0, 4.228, '09Jun10', fl2, 'thinned skull') # same as 68/70, but no stimulation Might be good!!!!
-DB[75] = ('075', '076', 560, 15.0, 4.224, '09Jun10', fl2, 'thinned skull') # Green light, 120 msec integration time phase map with structure
-DB[77] = ('077', '078', 560, 25.0, 4.248, '09Jun10', fl2, 'thinned skull') # Green light, 151 msec integration time - a little noisy ?
-DB[79] = ('079', '081', 610, 15.0, 4.204, '09Jun10', fl2, 'thinned skull') # 610, 30 fps, 30 msec integration time way too big to handle
-DB[82] = ('082', '085', 610, 15.0, 4.204, '09Jun10', fl2, 'thinned skull') # 610, 30 fps, 30 msec integration time broken down, gradient, but horizontal stripe
-DB[83] = ('083', '086', 610, 15.0, 4.204, '09Jun10', fl2, 'thinned skull') # 610, 30 fps, 30 msec integration time -- Diagonal gradient 
-DB[84] = ('084', '087', 610, 15.0, 4.204, '09Jun10', fl2, 'thinned skull') # 610, 30 fps, 30 msec integration time -- Diagonal gradient
-
-
+DB = {4: ('004', '003', 610, 10.0, 2.5, '14Mar16', fl1, 'thinned skull')}
+DB[5] = ('005', '002', 610, 20.0, 2.5, '14Mar16', fl1, 'thinned skull') 
+DB[6] = ('006', '001', 610, 30.0, 2.5, '14Mar16', fl1, 'thinned skull') 
 
 
 D = []
 d = []
-measuredPeriod = 6.444
+measuredPeriod = 2.5
 binsize = 4
 gfilt = 0
-freqlist = numpy.logspace(3, 4.7, 12, base=10)
-homedir = os.getenv('HOME')
-workingpath = 'Desktop/IntrinsicImaging/video_'
-basepath = os.path.join(homedir, workingpath)
-basepath = '/Volumes/Promise Pegasus/ManisLab_Data3/IntrinsicImaging/'
+
+basepath = '/Volumes/TRoppData/2016.03.14_000/Sound_Stimulation_'
 
 class testAnalysis():
     def __init__(self):
@@ -129,10 +91,11 @@ class testAnalysis():
         self.imageData = []
         self.phasex = []
         self.phasey = []
-        self.nPhases = 12
-        self.nCycles = 0
+        self.nPhases = 17
+        self.nCycles = 3
         
     def parse_and_go(self, argsin = None):
+        global measuredPeriod
         global period
         parser=OptionParser() # command line options
         ##### parses all of the options inputted at the command line TFR 11/13/2015
@@ -144,7 +107,7 @@ class testAnalysis():
                           help="Use directory for data")
         parser.add_option("-t", "--test", dest="test", action='store_true',
                           help="Test mode to check calculations", default=False)
-        parser.add_option("-p", '--period', dest = "period", default=8.0, type="float",
+        parser.add_option("-p", '--period', dest = "period", type="float",
                           help = "Stimulus cycle period")
         parser.add_option("-c", '--cycles', dest = "cycles", default=0, type="int",
                           help = "# cycles to analyze")
@@ -169,7 +132,7 @@ class testAnalysis():
             gfilt = options.gfilt
 
             #TFR- this code generates a test signal for running a test analysis sequence
-        print options.test
+        print "Run test?", options.test
         if options.test is True:
             print "Running Test Sample"
             period = 8.0 # period and frame sample rate can be different
@@ -233,9 +196,9 @@ class testAnalysis():
         upf = None
         dwnf = None
         if options.upfile is not None:
-            upf = basepath + options.upfile + '.ma'
+            upf = basepath + options.upfile + '/000/Camera/frames.ma'
         if options.downfile is not None:
-            dwnf = basepath + options.downfile + '.ma'
+            dwnf = basepath + options.downfile + '/000/Camera/frames.ma'
 
         for file in (upf, dwnf):
 #if options.upfile is not None and options.downfile is not None:
@@ -252,7 +215,13 @@ class testAnalysis():
             print "data loaded"
             target = target + 1
             self.times = im.axisValues('Time').astype('float32')
-            self.imageData = im.view(ndarray).astype('float32')
+            self.imageData = im.view(np.ndarray).astype('float32')
+            pg.plot(self.imageData[10,3,:],title='(3,:)')
+            print '(10,3,15)', self.imageData[10,3,15]
+            pg.plot(self.imageData[10,:,3],title='(:,3)')
+            pg.image(self.imageData[10,:,60:160],title='(10,:,60:160)')
+            pg.image(self.imageData[10,55:125,:],title='(10,65:105,:)')
+            self.imageData=self.imageData[:,55:125,60:160]
             im=[]
             if file is upf:
                upflag = 1
@@ -260,9 +229,9 @@ class testAnalysis():
                upflag = 0
             self.Analysis_FourierMap(period=measuredPeriod, target = target,  bins=binsize, up=upflag)
         if target > 0:
-            self.plotmaps(mode = 1, target = target, gfilter = gfilt)
+            self.plotmaps_pg(mode = 1, target = target, gfilter = gfilt)
 
-    def Analysis_FourierMap(self, period = 8.0, target = 1, mode=0, bins = 1, up=1):
+    def Analysis_FourierMap(self, period = 2.5, target = 1, mode=0, bins = 1, up=1):
         global D
         D = []
         self.DF = []
@@ -327,11 +296,10 @@ class testAnalysis():
         self.timeavg = numpy.mean(numpy.mean(self.imageData[:,int(sh[1]*0.25):int(sh[1]*0.75),int(sh[2]*0.25):int(sh[2]*0.75)], axis=2),axis=1) # return average of entire image over time
         print " >>Before HPF: Noise floor (std/mean): %12.6f  largest std: %12.6f" % (numpy.mean(self.stdimg)/numpy.mean(self.avgimg), 
                numpy.amax(self.stdimg)/numpy.mean(self.avgimg))
-
-        # color scheme: magenta with symbol is "raw" data for one pixel
-        #               black is after averaged signal over space is subtracted over time
-        #               red is after both corrections (boxcar and time acverage)
+        print 'shape of self.timeavg:', np.shape(self.timeavg)
+        print 'shape of self.imageData', np.shape(self.imageData)
         zid = self.imageData[:,ipx,ipy]-self.timeavg
+        #pg.image(zid, title='subtracted area') doesn't make sense to plot it this way- change this later
         mta = scipy.signal.detrend(self.timeavg)
         mtaa = numpy.mean(mta, axis=0)
         stdta = numpy.std(mta)
@@ -403,23 +371,26 @@ class testAnalysis():
         print " >>after HPF: Noise floor (std/mean): %12.6f  largest std: %12.6f" % (numpy.mean(self.stdimg)/numpy.mean(self.avgimg), 
                numpy.amax(self.stdimg)/numpy.mean(self.avgimg))
         
-        print "now reshaping"
+        # print "now reshaping"
         self.n_times = numpy.arange(0, n_PtsPerCycle*ndt, ndt) # just one cycle
-        # put data into new shape to prepare for mean. "Folds" data by cycles". Also multiply to make average work
-        self.imageData = numpy.reshape(self.imageData, 
-                         (n_Periods, n_PtsPerCycle, sh[1], sh[2])).astype('float32')
+        # # put data into new shape to prepare for mean. "Folds" data by cycles". Also multiply to make average work
+        # self.imageData = numpy.reshape(self.imageData, 
+        #                  (n_Periods, n_PtsPerCycle, sh[1], sh[2])).astype('float32')
 
-        print "now calculating mean"
-        # excluding bad trials
-        trials = range(0, n_Periods)
-        reject = reject[0]
-        for i in range(0,len(reject)):
-            t = reject[i]/n_PtsPerCycle
-            if t in trials:
-                trials.remove(t)
-        print "retaining trials: ", trials
-        D = numpy.mean(self.imageData[trials,:,:,:], axis=0).astype('float32') # /divider # get mean of the folded axes.
-        print "mean calculated, now detrend and fft"
+        # print "now calculating mean"
+        # # excluding bad trials
+        # trials = range(0, n_Periods)
+        # reject = reject[0]
+        # for i in range(0,len(reject)):
+        #     t = reject[i]/n_PtsPerCycle
+        #     if t in trials:
+        #         trials.remove(t)
+        # print "retaining trials: ", trials
+        #D = numpy.mean(self.imageData[trials,:,:,:], axis=0).astype('float32') # /divider # get mean of the folded axes.
+        # print "mean calculated, now detrend and fft"
+        #edge detect
+        
+        D = self.imageData
         # detrend before taking fft
         D = scipy.signal.detrend(D, axis=0)
         # calculate FFT and get amplitude and phase
@@ -623,7 +594,7 @@ class testAnalysis():
             #pylab.subplot(2,3,5)
             phaseImg2 = scipy.ndimage.gaussian_filter(self.phaseImage2, gfilt, order=0,mode='reflect') 
             #self.phase2View.addItem(pg.ImageItem(phaseImg2))
-            self.phs2 = pg.image(phaseImg2, title="Phase Map 2", levels=(-np.pi/2.0, np.pi/2.0))
+            self.phs2 = pg.image(phaseImg2, title="Phase Map 2", levels=(-np.pi, np.pi))
             #imgp2 = pylab.imshow(phaseImg2, cmap=matplotlib.cm.hsv)
             #pylab.colorbar()
             #imgp2.set_clim=(-numpy.pi/2.0, numpy.pi/2.0)
@@ -634,11 +605,26 @@ class testAnalysis():
             np1 = scipy.ndimage.gaussian_filter(self.phaseImage1, gfilt, order=0, mode='reflect')
             np2 = scipy.ndimage.gaussian_filter(self.phaseImage2, gfilt, order=0, mode='reflect')
             dphase = np1 + np2
+            # for i in range(dphase.shape[0]):
+            #     for j in range(dphase.shape[1]):
+            #         #for k in range(dphase.shape[2]):
+            #         if dphase[i,j]<0:
+            #             dphase[i,j] = dphase[i,j]+2*np.pi
+            #         if dphase[i,j]<2*np.pi/5:
+            #             dphase[i,j]=0
+            #         elif dphase[i,j]<4*np.pi/5:
+            #             dphase[i,j]=1
+            #         elif dphase[i,j]<6*np.pi/5:
+            #             dphase[i,j]=2
+            #         elif dphase[i,j]<8*np.pi/5:
+            #             dphase[i,j]=3
+            #         else:
+            #             dphase[i,j]=4
             #dphase = self.phaseImage1 - self.phaseImage2
            
             #scipy.ndimage.gaussian_filter(dphase, 2, order=0, output=dphase, mode='reflect')
             #self.phiView.addItem(pg.ImageItem(dphase))
-            self.phi = pg.image(dphase, title="2x Phi map", levels=(-np.pi, np.pi))
+            self.phi = pg.image(dphase, title="2x Phi map", levels=(0, 2*np.pi))
             #imgpdouble = pylab.imshow(dphase, cmap=matplotlib.cm.hsv)
             #pylab.title('2x Phi map')
             #pylab.colorbar()
@@ -655,15 +641,15 @@ class testAnalysis():
             sh = D.shape
             spr = sh[2]/self.nPhases
             wvfms=[]
-            for i in range(0, self.nPhases):
-                Dm = self.avgimg[i*spr,i*spr] # diagonal run
-                wvfms=self.n_times, 100.0*(D[:,self.phasex[i], self.phasey[i]]/Dm)
-                #pylab.plot(self.n_times, 100.0*(D[:,self.phasex[i], self.phasey[i]]/Dm))
-                self.wavePlt.plot(self.n_times, 100.0*(D[:,self.phasex[i], self.phasey[i]]/Dm))
-                #pylab.hold('on')
-                #self.plotlist.append(pg.image(wvfms, title="Waveforms"))
-                #print "it worked"
-            #pylab.title('Waveforms')
+            # for i in range(0, self.nPhases):
+            #     Dm = self.avgimg[i*spr,i*spr] # diagonal run
+            #     wvfms=self.n_times, 100.0*(D[:,self.phasex[i], self.phasey[i]]/Dm)
+            #     #pylab.plot(self.n_times, 100.0*(D[:,self.phasex[i], self.phasey[i]]/Dm))
+            #     self.wavePlt.plot(self.n_times, 100.0*(D[:,self.phasex[i], self.phasey[i]]/Dm))
+            #     #pylab.hold('on')
+            #     #self.plotlist.append(pg.image(wvfms, title="Waveforms"))
+            #     #print "it worked"
+            # #pylab.title('Waveforms')
 
         print "plotmaps Block 4"
 

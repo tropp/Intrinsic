@@ -33,7 +33,8 @@ class testAnalysis():
         global d
         self.imageData = []
         self.times = []
-        fileName = '/Volumes/Promise Pegasus/ManisLab_Data3/IntrinsicImaging/video_004.ma'
+        #fileName = '/Volumes/Promise Pegasus/ManisLab_Data3/IntrinsicImaging/video_004.ma'
+        fileName = '/Volumes/TRoppData/2016.03.14_000/Sound_Stimulation_001/000/Camera/frames.ma'
         try:
             im = metaarray.MetaArray(file=fileName)
         except:
